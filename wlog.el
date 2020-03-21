@@ -50,9 +50,9 @@ packet will be signed.")
   "Prepare connection"
   (eredis-connect wlog-redis-host wlog-redis-port))
 
-(defun wlog-prepare-packet (data)
+(defun wlog-prepare-packet (audio-bytes)
   "Serialize data along with other metadata"
-  (let ((packet `((data . ,data) (source . ,wlog-source))))
+  (let ((packet `((audio . ,audio-bytes) (source . ,wlog-source))))
     (prin1-to-string packet)))
 
 ;;;###autoload
