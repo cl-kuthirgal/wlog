@@ -52,7 +52,7 @@ packet will be signed.")
 
 (defun wlog-prepare-packet (audio-bytes)
   "Serialize data along with other metadata"
-  (let ((packet `((audio . ,audio-bytes) (source . ,wlog-source))))
+  (let ((packet `((audio . ,(base64-encode-string (encode-coding-string audio-bytes 'utf-8) t)) (source . ,wlog-source))))
     (prin1-to-string packet)))
 
 ;;;###autoload
