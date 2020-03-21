@@ -29,9 +29,10 @@ exec ros -Q -- $0 "$@"
 
 (defun play-packet (packet)
   (let* ((audio-bytes (qbase64:decode-string (serapeum:assocdr 'audio packet)))
-         (tmp-file (serapeum:concat "/tmp/" (prin1-to-string (uuid:make-v4-uuid)) ".wav")))
+         (tmp-file (serapeum:concat "/tmp/wlog-" (prin1-to-string (uuid:make-v4-uuid)) ".wav")))
     (alexandria:write-byte-vector-into-file audio-bytes tmp-file :if-exists :supersede)
-    (uiop:run-program (list "play" tmp-file))))
+    (uiop:run-program (list "play" tmp-file))
+    (uiop:delete-file-if-exists tmp-file)))
 
 (defun main (&rest args)
   "Main cli function. Blocks on wlog redis channel."
