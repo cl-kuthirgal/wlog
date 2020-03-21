@@ -1,0 +1,15 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#| Simple audio play dashboard for wlog
+exec ros -Q -- $0 "$@"
+|#
+
+(ql:quickload '(inferior-shell cl-redis bordeaux-threads) :silent t)
+
+(defpackage #:wlog-dash.1234
+  (:use #:cl))
+
+(in-package #:wlog-dash.1234)
+
+(defun main (&rest args)
+  (print "Hello world"))
