@@ -1,3 +1,6 @@
 #+TITLE: wlog
 
-Voice logging for work (mostly remote). Runs on redis pub/sub. Work in progress.
+Voice logging for work (mostly remote). Runs on redis pub/sub.
+
+=wlogging= is like voice tweeting for work. We keep a listen server running in our
+office and use clients (as of now only for Emacs) for tweeting.
