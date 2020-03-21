@@ -4,7 +4,7 @@
 exec ros -Q -- $0 "$@"
 |#
 
-(ql:quickload '(inferior-shell cl-redis bordeaux-threads serapeum uiop) :silent t)
+(ql:quickload '(alexandria inferior-shell cl-redis bordeaux-threads serapeum uiop qbase64) :silent t)
 
 (defpackage #:wlog-dash.1234
   (:use #:cl))
@@ -21,23 +21,13 @@ exec ros -Q -- $0 "$@"
   "Channel for streaming packets.")
 
 (defun play-packet (packet)
-  (let ((data (read-from-string packet)))
-        ;; (proc (uiop:launch-program "play" :input :stream)))
-    (format t "playing ~A" (serapeum:assocdr 'source data))
-    (harmony-simple:play 'harmony:buffer-source :sfx :buffers (harmony-simple:decode (serapeum:assocdr 'audio data)))))
-    ;; (write (serapeum:assocdr 'DATA data) :stream (uiop:process-info-input proc))
-    ;; (force-output (uiop:process-info-input proc))))
-
-(defvar *msg*)
-(play-packet (nth 2 *msg*))
-
-(harmony-simple:initialize)
-
-(let* ((packet (nth 2 *msg*))
-       (data (read-from-string packet))
-       (audio (serapeum:assocdr 'audio data)))
-  (alexandria:write-string-into-file audio "/tmp/audio.wav" :if-exists :supersede)
-  (harmony-simple:play #p"/tmp/audio.wav" :sfx))
+  (print (serapeum:assocdr 'audio packet))
+  (let* ((audio-bytes (qbase64:decode-string (serapeum:assocdr 'audio packet)))
+         (tmp-file "/tmp/wlog.wav"))
+    (format t "playing audio from: ~A" (serapeum:assocdr 'source packet))
+    ;; TODO: Generate random file names
+    (alexandria:write-byte-vector-into-file audio-bytes tmp-file :if-exists :supersede)
+    (uiop:run-program (list "play" tmp-file))))
 
 (defun main (&rest args)
   "Main cli function. Blocks on wlog redis channel."
@@ -45,4 +35,5 @@ exec ros -Q -- $0 "$@"
   (redis:with-connection (:host *wlog-redis-host* :port *wlog-redis-port*)
     (red:subscribe *wlog-redis-channel*)
     (loop for msg = (redis:expect :anything)
-          do (progn (setf *msg* msg) break))))
+          do (let ((packet (read-from-string (nth 2 msg))))
+               (bt:make-thread (lambda () (play-packet packet)))))))
