@@ -1,1 +1,3 @@
 #+TITLE: wlog
+
+Voice logging for work (mostly remote). Runs on redis pub/sub. Work in progress.
