@@ -24,3 +24,6 @@ Run =make= to build the server (you will need [[https://github.com/roswell/roswe
 *** Emacs Client
 Just running =wlog= from the package =wlog.el= should work. This depends on =arecord=
 and =sox= command line tools.
+
+*** Security
+Run this under ssh tunnels maybe.
