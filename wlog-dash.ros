@@ -14,7 +14,7 @@ exec ros -Q -- $0 "$@"
 (defparameter *wlog-redis-host* (or (uiop:getenv "WLOG_REDIS_HOST") "127.0.0.1")
   "Host for redis.")
 
-(defparameter *wlog-redis-port* (or (parse-integer (uiop:getenv "WLOG_REDIS_PORT")) 6379)
+(defparameter *wlog-redis-port* (parse-integer (or (uiop:getenv "WLOG_REDIS_PORT") "6379"))
   "Port for redis.")
 
 (defparameter *wlog-redis-channel* (or (uiop:getenv "WLOG_REDIS_CHANNEL") "wlog-channel")
