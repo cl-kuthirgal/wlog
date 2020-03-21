@@ -4,8 +4,8 @@
 
 ;; Author: Abhinav Tushar <abhinav@lepisma.xyz>
 ;; Version: 0.0.1
-;; Package-Requires: ((emacs "26"))
-;; URL: https://github.com/lepisma/wlog.el
+;; Package-Requires: ((emacs "26") (eredis "0.9.6"))
+;; URL: https://github.com/lepisma/wlog
 
 ;;; Commentary:
 
