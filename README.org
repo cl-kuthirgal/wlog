@@ -2,19 +2,25 @@
 
 Voice logging for, mostly remote, work.
 
-#+begin_quote
-The steps are not polished enough so don't expect all to work right away.
-#+end_quote
-
 =wlogging= is what we are trying to use for voice tweeting at work. We keep a
-listen server running in our office and use clients (as of now only for Emacs)
-for tweeting.
+listen server running in our office (and other places) and use clients (as of
+now only for Emacs) for tweeting.
 
 ** Quickstart
 We use in memory redis pub/sub for keeping audio so we need a redis running
-somewhere. The dash itself (use =make=) runs on a server with =play= installed and a
-speaker present.
+somewhere.
+
+*** Dash Server
+The dash plays all the audios coming in on the server. This needs =play= installed
+and a working speaker.
+
+Run =make= to build the server (you will need [[https://github.com/roswell/roswell][roswell]] for this) and run
+=./wlog-dash= to start. Relevant environment variables are:
+
+1. =WLOG_REDIS_HOST=. Defaults to =127.0.0.1=
+2. =WLOG_REDIS_PORT=. Defaults to =6379=.
+3. =WLOG_REDIS_CHANNEL=. Defaults to =wlog-channel=.
 
 *** Emacs Client
-Just running =wlog= from the package =wlog.el= should work. You might need to
-temporary eval [[https://github.com/lepisma/emacs-speech-input/blob/master/esi-record.el][esi-record]] too (which in turn relies on =arecord=).
+Just running =wlog= from the package =wlog.el= should work. This depends on =arecord=
+and =sox= command line tools.
