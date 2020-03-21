@@ -21,7 +21,6 @@ exec ros -Q -- $0 "$@"
   "Channel for streaming packets.")
 
 (defun play-packet (packet)
-  (print (serapeum:assocdr 'audio packet))
   (let* ((audio-bytes (qbase64:decode-string (serapeum:assocdr 'audio packet)))
          (tmp-file "/tmp/wlog.wav"))
     (format t "playing audio from: ~A" (serapeum:assocdr 'source packet))
