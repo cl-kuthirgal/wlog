@@ -28,13 +28,16 @@ exec ros -Q -- $0 "$@"
 (defparameter *wlog-redis-channel* (or (uiop:getenv "WLOG_REDIS_CHANNEL") "wlog-channel")
   "Channel for streaming packets.")
 
+(defun print-terminal (control-string &rest format-arguments)
+  (apply #'format t control-string format-arguments)
+  (finish-output *standard-output*))
+
 (defun play-packet (packet)
   (let* ((audio-bytes (qbase64:decode-string (serapeum:assocdr 'audio packet)))
          (tmp-file (serapeum:concat "/tmp/wlog-" (prin1-to-string (uuid:make-v4-uuid)) ".wav"))
          (timestring (local-time:format-timestring nil (local-time:now) :format local-time:+asctime-format+)))
     (alexandria:write-byte-vector-into-file audio-bytes tmp-file :if-exists :supersede)
-    (format t "[~A]: ~A~C" timestring (serapeum:assocdr 'source packet) #\newline)
-    (finish-output *standard-output*)
+    (print-terminal "[~A]: ~A~C" timestring (serapeum:assocdr 'source packet) #\newline)
     (uiop:run-program (list "play" tmp-file))
     (uiop:delete-file-if-exists tmp-file)))
 
@@ -43,6 +46,7 @@ exec ros -Q -- $0 "$@"
   (declare (ignore args))
   (redis:with-connection (:host *wlog-redis-host* :port *wlog-redis-port*)
     (red:subscribe *wlog-redis-channel*)
+    (print-terminal ":: Connected. Listening.~C" #\newline)
     (loop for msg = (redis:expect :anything)
           do (let ((packet (read-from-string (nth 2 msg))))
                (bt:make-thread (lambda () (play-packet packet)))))))
