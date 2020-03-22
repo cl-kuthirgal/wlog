@@ -9,6 +9,7 @@ exec ros -Q -- $0 "$@"
                 bordeaux-threads
                 serapeum
                 uiop
+                local-time
                 uuid
                 qbase64)
               :silent t)
@@ -29,8 +30,11 @@ exec ros -Q -- $0 "$@"
 
 (defun play-packet (packet)
   (let* ((audio-bytes (qbase64:decode-string (serapeum:assocdr 'audio packet)))
-         (tmp-file (serapeum:concat "/tmp/wlog-" (prin1-to-string (uuid:make-v4-uuid)) ".wav")))
+         (tmp-file (serapeum:concat "/tmp/wlog-" (prin1-to-string (uuid:make-v4-uuid)) ".wav"))
+         (timestring (local-time:format-timestring nil (local-time:now) :format local-time:+asctime-format+)))
     (alexandria:write-byte-vector-into-file audio-bytes tmp-file :if-exists :supersede)
+    (format t "[~A]: ~A~C" timestring (serapeum:assocdr 'source packet) #\newline)
+    (finish-output *standard-output*)
     (uiop:run-program (list "play" tmp-file))
     (uiop:delete-file-if-exists tmp-file)))
 
